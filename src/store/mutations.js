@@ -1,0 +1,2 @@
+export const GET_PRODUCTS_LIST      = 'GET_PRODUCTS_LIST';
+export const SET_PRODUCT_FORM_DATA  = 'SET_PRODUCT_FORM_DATA';
