@@ -20,26 +20,30 @@
                 v-model="getSchema.title"
                 label="Title"
                 :rules="titleRules"
+                :error-messages="messages.title"
                 required
             ></v-text-field>
             <v-text-field
                 v-model="getSchema.price"
                 label="Price"
                 :rules="priceRules"
+                :error-messages="messages.price"
                 required
             ></v-text-field>
-            <v-text-field
+            <v-textarea
                 v-model="getSchema.description"
                 label="Description"
                 :rules="descRules"
+                :error-messages="messages.description"
                 required
-            ></v-text-field>
+            ></v-textarea>
 
             <v-file-input
                 v-model="getSchema.image"
                 accept="image/*"
                 label="File input"
                 :rules="imageRules"
+                :error-messages="messages.description"
                 required
             ></v-file-input>
 
@@ -81,6 +85,12 @@
           </v-btn>
         </v-card-actions>
       </v-card>
+      <v-snackbar
+          v-model="snackbar"
+          :timeout="timeout"
+      >
+        {{ errorText }}
+      </v-snackbar>
     </v-dialog>
   </v-row>
 </template>
@@ -108,7 +118,16 @@ export default {
     ],
     dialog: false,
     editedStatus: false,
-    imageUrl: ''
+    imageUrl: '',
+    messages: {
+      title: [],
+      price: [],
+      description: [],
+      image: [],
+    },
+    snackbar: false,
+    errorText: '',
+    timeout: 2000
   }),
 
   computed: {
@@ -116,7 +135,7 @@ export default {
       return this.$store.getters.setSchemaData;
     },
     buttonTitle() {
-      return this.indexEdited === -1 ? "Submit" : "Edit";
+      return this.indexEdited === -1 ? "Submit" : "Update";
     },
     formTitle() {
       return this.indexEdited === -1 ? "Create New Item" : "Edit Item";
@@ -154,7 +173,16 @@ export default {
             }
           })
           .catch(function (error) {
-            console.log(error);
+            let errors = error.data.errors;
+
+            if (error.status === 422) {
+              for (let field in errors) {
+                self.messages[field] = errors[field]
+              }
+            } else {
+              self.snackbar = true;
+              self.errorText = error.data.error;
+            }
             self.$store.dispatch("fetchProductList");
           });
     },
@@ -183,7 +211,8 @@ export default {
             }
           })
           .catch(function (error) {
-            console.log(error);
+            self.snackbar = true;
+            self.errorText = error.data.error;
             self.$store.dispatch("fetchProductList");
           });
     },

@@ -6,11 +6,11 @@
         dark
     >
       <div class="d-flex align-center">
-        <h1>Wedevs</h1>
+        <h1>Assignment</h1>
       </div>
 
       <v-spacer></v-spacer>
-      <v-btn depressed color="primary" @click.stop.prevent="logout()">Login</v-btn>
+      <v-btn depressed color="primary" @click.stop.prevent="logout()">Logout</v-btn>
     </v-app-bar>
   </div>
 </template>

@@ -52,6 +52,9 @@
             :items="getSchema"
             sort-by="calories"
             class="elevation-1"
+            :options.sync="options"
+            :loading="loading"
+            :server-items-length="options.totalItems"
         >
           <template v-slot:item.image="{ item }">
             <div class="p-2">
@@ -59,19 +62,26 @@
             </div>
           </template>
           <template v-slot:item.actions="{ item }">
-            <v-icon
+            <v-btn
+                color="primary"
+                class="mx-2"
+                fab
                 small
-                class="mr-2"
+                dark
                 @click="editItem(item)"
             >
-              mdi-pencil
-            </v-icon>
-            <v-icon
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+
+            <v-btn
+                color="error"
+                fab
                 small
+                dark
                 @click="deleteItem(item)"
             >
-              mdi-delete
-            </v-icon>
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
           </template>
         </v-data-table>
       </v-col>
@@ -97,17 +107,16 @@ export default {
       dialog: false,
       formDialogStatus: false,
       dialogDelete: false,
-      pagination: {
-        rowsPerPage: 10,
-        rowsPerPageItems: [10]
-      },
+      options: {},
       loading: true,
+      searchParam: {},
+
       headers: [
         {text: 'Title', align: 'start', sortable: false, value: 'title'},
         {text: 'Image', sortable: false, value: 'image'},
-        {text: 'Price', value: 'price'},
+        {text: 'Price',  value: 'price'},
         {text: 'Description', sortable: false, value: 'description'},
-        {text: 'Actions', value: 'actions', sortable: false},
+        {text: 'Actions', align: 'center', value: 'actions', sortable: false},
       ],
 
       editedIndex: -1,
@@ -129,7 +138,7 @@ export default {
         title: "",
         description: "",
         price: "",
-        image: null,
+        image: {},
         status: 1
       };
     },
@@ -182,13 +191,34 @@ export default {
           });
     },
 
+    setLimit() {
+      const { sortBy, page, itemsPerPage } = this.options;
+      this.searchParam.page = page;
+      this.searchParam.limit = itemsPerPage;
+      this.searchParam.sort = sortBy;
+      this.searchParam.search = this.search;
+
+    },
+
+    getDataFromApi() {
+      this.loading = true;
+      this.setLimit();
+      this.$store.dispatch("fetchProductList", this.searchParam).then(data => {
+        this.loading = false;
+        this.options.totalItems = data.meta.total;
+      });
+    }
+
   },
 
-  created() {
-    this.$store.dispatch("fetchProductList");
-  },
-
-  watch: {},
+  watch: {
+    options: {
+      handler () {
+        this.getDataFromApi()
+      },
+      deep: true,
+    },
+  }
 }
 </script>
 

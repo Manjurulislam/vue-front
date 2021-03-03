@@ -9,7 +9,7 @@ const state = {
         title: "",
         description: "",
         price: "",
-        image: null,
+        image: {},
         status: 1
     }
 };
@@ -55,18 +55,15 @@ const actions = {
             Axios.post(productResource, data)
                 .then(function (response) {
                     if (response.data.status === "success") {
-
                         resolve();
                     } else {
                         console.log(response.data.message);
-
                         reject();
                     }
                 })
                 .catch(function (error) {
-                    console.log(error);
-
-                    reject();
+                    //console.log(error.response);
+                    reject(error.response);
                 });
         });
     },
@@ -88,8 +85,8 @@ const actions = {
                     }
                 })
                 .catch(function (error) {
-                    console.log(error);
-                    reject();
+                    console.log(error.response);
+                    reject(error.response);
                 });
         });
     },
@@ -100,18 +97,15 @@ const actions = {
             Axios.delete(url)
                 .then(function (response) {
                     if (response.data.status === "success") {
-
                         resolve();
                     } else {
                         console.log(response.data.message);
-
                         reject();
                     }
                 })
                 .catch(function (error) {
                     console.log(error);
-
-                    reject();
+                    reject(error.response);
                 });
         });
     },
