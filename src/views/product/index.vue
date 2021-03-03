@@ -1,5 +1,6 @@
 <template>
   <v-container fluid>
+    <app-bar></app-bar>
     <v-row no-gutters>
       <v-col
           cols="12"
@@ -81,11 +82,13 @@
 
 <script>
 
+import appBar from "@/components/appBar";
 import formDialog from "@/components/products/productForm.vue";
 
 export default {
   components: {
-    formDialog
+    formDialog,
+    appBar
   },
 
   data() {

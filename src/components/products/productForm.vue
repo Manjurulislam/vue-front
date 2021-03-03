@@ -95,6 +95,7 @@ export default {
     valid: true,
     titleRules: [
       v => !!v || 'Title is required',
+      v => (v && v.length <= 255) || 'Title must be less than 255 characters',
     ],
     descRules: [
       v => !!v || 'Description is required',
